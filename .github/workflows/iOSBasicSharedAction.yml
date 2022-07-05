@@ -1,7 +1,7 @@
 name: Create iOS Release Build
 
 on:
-  workflow_call
+  workflow_call:
     inputs:
       targetName:
         required: true
