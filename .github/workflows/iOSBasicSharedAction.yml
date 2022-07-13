@@ -26,20 +26,16 @@ jobs:
       
     - name: Select Xcode
       run: sudo xcode-select -switch /Applications/Xcode.app
-      
-    - name: Restore Pods cache
-        uses: actions/cache@v2
+
+    - name: Restore Cache or Pod install
+    - uses: actions/cache@v2
         with:
-          path: |
-            ios/Pods
-            ~/Library/Caches/CocoaPods
-            ~/.cocoapods
-          key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pods-
-      - name: Install Pods
+            path: Pods
+            key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+            restore-keys: | ${{ runner.os }}-pods-
+    - name: Install Pods
         run: pod install
-         shell: bash
+        shell: bash
     
     - name: Lint Script
         uses: mohanraajsk/POC_Shared_Actions/.github/workflows/iOSBasicSharedActionLint.yml@main
