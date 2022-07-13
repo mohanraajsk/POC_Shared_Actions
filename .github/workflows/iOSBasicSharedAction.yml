@@ -26,14 +26,36 @@ jobs:
 
     - name: Select Xcode
       run: sudo xcode-select -switch /Applications/Xcode.app
-
-    - name: Install Dependencies
-      run: pod install
-      shell: bash
+      
+      - name: Restore Pods cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ios/Pods
+            ~/Library/Caches/CocoaPods
+            ~/.cocoapods
+          key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+      - name: Install Pods
+        run: pod install
+         shell: bash
+    
+    - name: Lint Script
+        uses: mohanraajsk/POC_Shared_Actions/.github/workflows/iOSBasicSharedActionLint.yml@main
+            with:
+                targetName: POC_GithuAction
+                workspaceName: POC_GithuAction.xcworkspace
 
     - name: Clean and Build
-      run: xcodebuild clean build test -workspace ${{inputs.workspaceName}} -scheme "${{ inputs.targetName }}" -sdk iphonesimulator -destination "platform=iOS Simulator,name=iPhone 11" ONLY_ACTIVE_ARCH=NO CODE_SIGNING_REQUIRED=NO
+        uses: mohanraajsk/POC_Shared_Actions/.github/workflows/iOSBasicSharedActionCleanAndBuild.yml@main
+            with:
+                targetName: POC_GithuAction
+                workspaceName: POC_GithuAction.xcworkspace
       
     - name: Test
-      run: xcodebuild test -workspace ${{inputs.workspaceName}} -scheme "${{ inputs.targetName }}" -sdk iphonesimulator -destination "platform=iOS Simulator,name=iPhone 11" ONLY_ACTIVE_ARCH=NO CODE_SIGNING_REQUIRED=NO
+        uses: mohanraajsk/POC_Shared_Actions/.github/workflows/iOSBasicSharedActionTesting.yml@main
+            with:
+            targetName: POC_GithuAction
+            workspaceName: POC_GithuAction.xcworkspace
       
