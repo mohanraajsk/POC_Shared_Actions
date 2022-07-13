@@ -28,7 +28,7 @@ jobs:
       run: sudo xcode-select -switch /Applications/Xcode.app
 
     - name: Restore Cache or Pod install
-    - uses: actions/cache@v2
+        uses: actions/cache@v2
         with:
             path: Pods
             key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
