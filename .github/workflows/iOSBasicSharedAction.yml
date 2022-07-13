@@ -31,21 +31,21 @@ jobs:
       run: pod install
       shell: bash
     
-#    - name: Lint Script
-#        uses: mohanraajsk/POC_Shared_Actions/.github/workflows/iOSBasicSharedActionLint.yml@main
-#            with:
-#                targetName: POC_GithuAction
-#                workspaceName: POC_GithuAction.xcworkspace
-#
-#    - name: Clean and Build
-#        uses: mohanraajsk/POC_Shared_Actions/.github/workflows/iOSBasicSharedActionCleanAndBuild.yml@main
-#            with:
-#                targetName: POC_GithuAction
-#                workspaceName: POC_GithuAction.xcworkspace
-#      
-#    - name: Test
-#        uses: mohanraajsk/POC_Shared_Actions/.github/workflows/iOSBasicSharedActionTesting.yml@main
-#            with:
-#            targetName: POC_GithuAction
-#            workspaceName: POC_GithuAction.xcworkspace
+    - name: Lint Script
+        uses: mohanraajsk/POC_Shared_Actions/.github/workflows/iOSBasicSharedActionLint.yml@main
+            with:
+                targetName: POC_GithuAction
+                workspaceName: POC_GithuAction.xcworkspace
+
+    - name: Clean and Build
+        uses: mohanraajsk/POC_Shared_Actions/.github/workflows/iOSBasicSharedActionCleanAndBuild.yml@main
+            with:
+                targetName: POC_GithuAction
+                workspaceName: POC_GithuAction.xcworkspace
+
+    - name: Test
+        uses: mohanraajsk/POC_Shared_Actions/.github/workflows/iOSBasicSharedActionTesting.yml@main
+            with:
+            targetName: POC_GithuAction
+            workspaceName: POC_GithuAction.xcworkspace
       
