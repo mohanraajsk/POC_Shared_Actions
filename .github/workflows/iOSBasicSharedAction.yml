@@ -23,11 +23,11 @@ jobs:
 
     - name: Open simulator
       run: open -a Simulator --args -CurrentDevice UDID E7358E62-ECF9-436A-834F-CFB7C2801FD9
-
+      
     - name: Select Xcode
       run: sudo xcode-select -switch /Applications/Xcode.app
       
-      - name: Restore Pods cache
+    - name: Restore Pods cache
         uses: actions/cache@v2
         with:
           path: |
