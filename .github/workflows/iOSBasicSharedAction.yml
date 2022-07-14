@@ -32,13 +32,13 @@ jobs:
       shell: bash
 
     - name: Clean and Build
-        uses: iOSBasicSharedActionCleanAndBuild.yml
+        uses: ../iOSBasicSharedActionCleanAndBuild.yml
             with:
                 targetName: POC_GithuAction
                 workspaceName: POC_GithuAction.xcworkspace
 
     - name: Test
-        uses: iOSBasicSharedActionTesting.yml
+        uses: ../iOSBasicSharedActionTesting.yml
             with:
             targetName: POC_GithuAction
             workspaceName: POC_GithuAction.xcworkspace
