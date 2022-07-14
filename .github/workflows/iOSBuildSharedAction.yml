@@ -32,7 +32,8 @@ jobs:
       with:
         path: Pods
         key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
-        restore-keys: | ${{ runner.os }}-pods-
+        restore-keys: |
+                    ${{ runner.os }}-pods-
 
     - name: Install Pods
       run: pod install
