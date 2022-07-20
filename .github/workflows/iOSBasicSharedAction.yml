@@ -20,6 +20,15 @@ jobs:
         echo "Env: ${{ inputs.workspaceName }}"
         pwd
         ls
+        
+    - name: Checkout tools repo
+    uses: actions/checkout@v3
+        with:
+            repository: mohanraajsk/POC_Shared_Actions
+            path: sharedrepo
+    - run: |
+        pwd
+        find $PWD -type f -name "check-pods-integrity.swift"
       
 #    - name: List of simulator
 #      run: xcrun simctl list
@@ -40,7 +49,7 @@ jobs:
            pwd
            ls
            mkdir -p ./build/
-           ./DevOps/ci/script/check-pods-integrity.swift ${{ inputs.targetName }} > pod_integrity.txt
+                   ./sharedrepo/DevOps/ci/script/check-pods-integrity.swift ${{ inputs.targetName }} > pod_integrity.txt
            echo "::set-output name=pod_status::success"
       
 #    - name: Lint
