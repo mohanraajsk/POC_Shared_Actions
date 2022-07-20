@@ -17,12 +17,14 @@ jobs:
     - run: |
         echo "Env: \"${{ inputs.targetName }}\""
         echo "Env: ${{ inputs.workspaceName }}"
+        pwd
+        ls
       
-    - name: List of simulator
-      run: xcrun simctl list
-
-    - name: Open simulator
-      run: open -a Simulator --args -CurrentDevice UDID E7358E62-ECF9-436A-834F-CFB7C2801FD9
+#    - name: List of simulator
+#      run: xcrun simctl list
+#
+#    - name: Open simulator
+#      run: open -a Simulator --args -CurrentDevice UDID E7358E62-ECF9-436A-834F-CFB7C2801FD9
       
     - name: Select Xcode
       run: sudo xcode-select -switch /Applications/Xcode.app
@@ -35,7 +37,7 @@ jobs:
       id: pod_status
       run: |
            mkdir -p ./build/
-           ./DevOps/ci/script/check-pods-integrity.swift LillyDevice > pod_integrity.txt
+           ./../DevOps/ci/script/check-pods-integrity.swift ${{ inputs.targetName }} > pod_integrity.txt
            echo "::set-output name=pod_status::success"
       
 #    - name: Lint
