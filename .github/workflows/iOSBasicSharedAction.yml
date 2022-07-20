@@ -22,13 +22,10 @@ jobs:
         ls
         
     - name: Checkout tools repo
-    uses: actions/checkout@v3
+        uses: actions/checkout@v3
         with:
             repository: mohanraajsk/POC_Shared_Actions
             path: sharedrepo
-    - run: |
-        pwd
-        find $PWD -type f -name "check-pods-integrity.swift"
       
 #    - name: List of simulator
 #      run: xcrun simctl list
