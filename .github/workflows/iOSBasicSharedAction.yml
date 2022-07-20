@@ -22,10 +22,10 @@ jobs:
         ls
         
     - name: Checkout shared actions repo
-        uses: actions/checkout@v3
-        with:
-            repository: mohanraajsk/POC_Shared_Actions
-            path: POC_Shared_Actions
+    - uses: actions/checkout@v3
+    with:
+        repository: mohanraajsk/POC_Shared_Actions
+        path: POC_Shared_Actions
       
 #    - name: List of simulator
 #      run: xcrun simctl list
