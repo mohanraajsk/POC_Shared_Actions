@@ -29,6 +29,7 @@ jobs:
         ls -la ~/
         mkdir ~/results
         echo Lint result will be here        > ~/results/lintresult.txt
+        cat ~/results/lintresult.txt
       
 #    - name: List of simulator
 #      run: xcrun simctl list
