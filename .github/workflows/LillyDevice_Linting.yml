@@ -1,0 +1,89 @@
+name: iOS Linting CI
+
+on:
+  workflow_call:
+    inputs:
+      targetName:
+        required: true
+        type: string
+      workspaceName:
+        required: true
+        type: string
+
+jobs:
+  CI_RUN:
+    name: IOS CI
+    runs-on: macOS-latest
+    timeout-minutes: 25
+    # Map a step output to a job output
+    outputs:
+      pod_status: ${{ steps.pod_status.outputs.pod_status }}
+
+    steps:
+    - name: Clone Source Repository
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ github.head_ref }}
+        fetch-depth: 0
+
+    - name: Fetch Base Ref
+      run: git fetch origin $GITHUB_BASE_REF
+    
+    - name: Checkout shared actions repo
+      uses: actions/checkout@v3
+      with:
+        repository: mohanraajsk/POC_Shared_Actions
+        path: sharedrepo
+    
+    - name: Install Dependencies
+      run: |
+           brew install groovy
+           brew install swiftlint
+          
+    - name: Switch XCode Version
+      run: sudo xcode-select -switch /Applications/Xcode.app
+      
+    - name: Pod Integrity Stage
+      id: pod_status
+      run: |
+           mkdir -p ./build/
+           ./sharedrepo/DevOps/ci/script/check-pods-integrity.swift POC_GithuAction > pod_integrity.txt
+           echo "::set-output name=pod_status::success"
+      if: always()
+
+    - name: Swift Lint Stage
+      run: fastlane lint --env config
+      if: always()
+
+    - name: Format SwiftLint Results
+      run: groovy ./sharedrepo/DevOps/ci/script/summary_report.groovy lint > lint_result.txt
+      if: always()
+
+#    - name: Unit Test Stage
+#      run: fastlane tests --env config
+#      timeout-minutes: 15
+#      if: always()
+#
+#    - name: Format Unit Test Results
+#      run: groovy ./DevOps/ci/script/summary_report.groovy test > unit_test_result.txt
+#      if: always()
+#
+#    - name: Test Coverage
+#      run: fastlane analysis --env config
+#      if: always()
+    
+    - name: Files to be Archived
+      run: |
+          mkdir ./artifact_report
+          groovy ./sharedrepo/DevOps/ci/script/custom_report.groovy lint > custom_lint.txt
+          groovy ./sharedrepo/DevOps/ci/script/custom_report.groovy test > custom_test.txt
+          cp pod_integrity.txt custom_lint.txt custom_test.txt lint_result.txt unit_test_result.txt artifact_report
+      if: always()
+
+    - name: Archive Artifacts
+      uses: actions/upload-artifact@v1
+      with:
+       name: build_artifacts
+       path: artifact_report
+      if: always()
+

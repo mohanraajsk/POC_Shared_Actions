@@ -1,0 +1,71 @@
+
+name: Lilly Device iOS Unit Testing CI
+
+on:
+  # push:
+  #   branches: [ develop ]
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+  CI_RUN:
+    name: IOS CI
+    runs-on: macOS-latest
+    timeout-minutes: 25
+    # Map a step output to a job output
+    outputs:
+      pod_status: ${{ steps.pod_status.outputs.pod_status }}
+
+    steps:
+    - name: Clone Source Repository
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ github.head_ref }}
+        fetch-depth: 0
+
+    - name: Fetch Base Ref
+      run: git fetch origin $GITHUB_BASE_REF
+    
+    - name: Install Dependencies
+      run: |
+           brew install groovy
+           brew install swiftlint
+          
+    - name: Switch XCode Version
+      run: sudo xcode-select -s /Applications/Xcode_11.4.1.app
+      
+    - name: Pod Integrity Stage
+      id: pod_status
+      run: |
+           mkdir -p ./build/
+           ./DevOps/ci/script/check-pods-integrity.swift LillyDevice > pod_integrity.txt
+           echo "::set-output name=pod_status::success"
+      if: always()
+
+    - name: Unit Test Stage
+      run: fastlane tests --env config
+      timeout-minutes: 15
+      if: always()
+
+    - name: Format Unit Test Results
+      run: groovy ./DevOps/ci/script/summary_report.groovy test > unit_test_result.txt
+      if: always()
+   
+    - name: Test Coverage
+      run: fastlane analysis --env config
+      if: always()
+    
+    - name: Files to be Archived
+      run: |
+          mkdir ./artifact_report
+          groovy ./DevOps/ci/script/custom_report.groovy lint > custom_lint.txt
+          groovy ./DevOps/ci/script/custom_report.groovy test > custom_test.txt
+          cp pod_integrity.txt custom_lint.txt custom_test.txt lint_result.txt unit_test_result.txt artifact_report
+      if: always()
+
+    - name: Archive Artifacts
+      uses: actions/upload-artifact@v1
+      with:
+       name: build_artifacts
+       path: artifact_report
+      if: always()

@@ -1,0 +1,141 @@
+name: iOS Publish CI
+
+on:
+  # push:
+  #   branches: [ develop ]
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+#  CI_RUN:
+#    name: IOS CI
+#    runs-on: macOS-latest
+#    timeout-minutes: 25
+#    # Map a step output to a job output
+#    outputs:
+#      pod_status: ${{ steps.pod_status.outputs.pod_status }}
+#
+#    steps:
+#    - name: Clone Source Repository
+#      uses: actions/checkout@v2
+#      with:
+#        ref: ${{ github.head_ref }}
+#        fetch-depth: 0
+#
+#    - name: Fetch Base Ref
+#      run: git fetch origin $GITHUB_BASE_REF
+#
+#    - name: Install Dependencies
+#      run: |
+#           brew install groovy
+#           brew install swiftlint
+#
+#    - name: Switch XCode Version
+#      run: sudo xcode-select -s /Applications/Xcode_11.4.1.app
+#
+#    - name: Pod Integrity Stage
+#      id: pod_status
+#      run: |
+#           mkdir -p ./build/
+#           ./DevOps/ci/script/check-pods-integrity.swift LillyDevice > pod_integrity.txt
+#           echo "::set-output name=pod_status::success"
+#      if: always()
+#
+#    - name: Swift Lint Stage
+#      run: fastlane lint --env config
+#      if: always()
+#
+#    - name: Format SwiftLint Results
+#      run: groovy ./DevOps/ci/script/summary_report.groovy lint > lint_result.txt
+#      if: always()
+#
+#    - name: Unit Test Stage
+#      run: fastlane tests --env config
+#      timeout-minutes: 15
+#      if: always()
+#
+#    - name: Format Unit Test Results
+#      run: groovy ./DevOps/ci/script/summary_report.groovy test > unit_test_result.txt
+#      if: always()
+#
+#    - name: Test Coverage
+#      run: fastlane analysis --env config
+#      if: always()
+#
+#    - name: Files to be Archived
+#      run: |
+#          mkdir ./artifact_report
+#          groovy ./DevOps/ci/script/custom_report.groovy lint > custom_lint.txt
+#          groovy ./DevOps/ci/script/custom_report.groovy test > custom_test.txt
+#          cp pod_integrity.txt custom_lint.txt custom_test.txt lint_result.txt unit_test_result.txt artifact_report
+#      if: always()
+#
+#    - name: Archive Artifacts
+#      uses: actions/upload-artifact@v1
+#      with:
+#       name: build_artifacts
+#       path: artifact_report
+#      if: always()
+
+  CI_PUBLISHER:
+    if: always()
+    runs-on: ubuntu-latest
+    needs: CI_RUN
+    steps:
+    - uses: actions/download-artifact@master
+      with:
+        name: build_artifacts
+        path: artifact_report
+
+    - name: Create CI Report # Output Coverate Test to PR
+      run: |
+          echo "#   CI Summary  " > ./pr_comment.txt
+          echo >> ./pr_comment.txt
+          echo "## Pod Integrity Results:" >> ./pr_comment
+          echo >> ./pr_comment
+          echo '```' >> ./pr_comment
+          cat artifact_report/pod_integrity.txt >> ./pr_comment || true
+          echo '```' >> ./pr_comment
+          echo >> ./pr_comment
+          echo "## Swift Lint Results:" >> ./pr_comment
+          echo >> ./pr_comment
+          echo '```' >> ./pr_comment
+          cat  artifact_report/lint_result.txt >> ./pr_comment || true
+          echo '```' >> ./pr_comment
+          echo >> ./pr_comment
+          echo "## Unit Test Results:" >> ./pr_comment
+          echo >> ./pr_comment
+          echo '```' >> ./pr_comment
+          cat artifact_report/unit_test_result.txt >> ./pr_comment || true
+          c=`cat <<EOF
+          import json
+          with open("./pr_comment") as f:
+            comment = f.read()
+          with open("./pr_comment.json", "w") as f:
+            json.dump({"body": comment}, f)
+          EOF`
+          python -c "$c"
+          cat ./pr_comment.json
+    - name: Publish CI Report To PR
+      env:
+        URL: ${{ github.event.pull_request.comments_url }}
+        GITHUB_TOKEN: ${{ secrets.gitCIToken }}
+      run: |
+          curl \
+            -X POST \
+            $URL \
+            -H "Content-Type: application/json" \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            --data-binary "@./pr_comment.json"
+   
+    - name: CI Results
+      run: |
+           echo -e "Pod Integrity Results \n"
+           cat artifact_report/pod_integrity.txt
+           echo -e "\n"
+           echo -e "Lint Result \n"
+           cat artifact_report/custom_lint.txt
+           echo -e "\n"
+           echo -e "Unit Test Result \n"
+           cat artifact_report/custom_test.txt
+           echo -e "\n"
