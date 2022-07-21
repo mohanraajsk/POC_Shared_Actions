@@ -47,8 +47,7 @@ jobs:
       
     - name: Summary results directory creation
       run: |
-        ls -la ~/
-        mkdir ~/results
+        mkdir results
 
     - name: Lint
       run: |
