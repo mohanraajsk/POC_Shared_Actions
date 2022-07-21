@@ -37,8 +37,11 @@ jobs:
     
     - name: Install Dependencies
       run: |
+           rm '/usr/local/bin/swiftlint
            brew install groovy
            brew install swiftlint
+           gem install fastlane
+           
           
     - name: Switch XCode Version
       run: sudo xcode-select -switch /Applications/Xcode.app
