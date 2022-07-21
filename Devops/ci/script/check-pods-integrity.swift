@@ -3,6 +3,8 @@
 
 import Foundation
 
+print("=======CommandLine.arguments=====")
+print("=======\(CommandLine.arguments)=====")
 guard CommandLine.arguments.count == 2 else { 
     print("This script checks undesired changes in Pods directory.")
     print("Usage: \(CommandLine.arguments[0]) {APP_ROOT_DIR}")
@@ -29,6 +31,7 @@ func shell(_ command: String) -> String? {
 
 // Returns `true` if integrity check passes
 func checkIntegrity() -> Bool {
+    print("=======checkIntegrity=====")
     let kDirPods = kDirProjectPrefix + "Pods/"
     let kFilenamePodsProject = kDirProjectPrefix + "Pods/Pods.xcodeproj/project.pbxproj"
     let kFilenamePodfileLock = kDirProjectPrefix + "Podfile.lock"
