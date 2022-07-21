@@ -37,7 +37,7 @@ jobs:
     
     - name: Install Dependencies
       run: |
-           rm '/usr/local/bin/swiftlint
+           rm '/usr/local/bin/swiftlint'
            brew install groovy
            brew install swiftlint
            gem install fastlane
