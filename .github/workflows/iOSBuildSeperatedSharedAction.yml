@@ -1,4 +1,4 @@
-name: Create iOS Release Build
+name: Create iOS  Build
 
 on:
   workflow_call:
@@ -17,34 +17,9 @@ jobs:
     - run: |
         echo "Env: \"${{ inputs.targetName }}\""
         echo "Env: ${{ inputs.workspaceName }}"
-      
-    - name: List of simulator
-      run: xcrun simctl list
-
-    - name: Open simulator
-      run: open -a Simulator --args -CurrentDevice UDID E7358E62-ECF9-436A-834F-CFB7C2801FD9
-      
-    - name: Select Xcode
-      run: sudo xcode-select -switch /Applications/Xcode.app
-
-    - name: Check cached PODS
-      uses: actions/cache@v2
-      with:
-        path: Pods
-        key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
-        restore-keys: |
-                    ${{ runner.os }}-pods-
-
-    - name: Install Pods
-      run: pod install
-    
-    - name: Lint
-      run: |
-          set -o pipefail
-          swiftlint lint --strict --quiet | sed -E 's/^(.*):([0-9]+):([0-9]+): (warning|error|[^:]+): (.*)/::\4 title=Lint error,file=\1,line=\2,col=\3::\5\n\1:\2:\3/'
 
     - name: Clean and Build
-      uses: ./.github/workflows/iOSBasicSharedActionCleanAndBuild.yml
+      run: xcodebuild clean build -workspace ${{inputs.workspaceName}} -scheme "${{ inputs.targetName }}" -sdk iphonesimulator -destination "platform=iOS Simulator,name=iPhone 11" ONLY_ACTIVE_ARCH=NO CODE_SIGNING_REQUIRED=NO
       
 
       
