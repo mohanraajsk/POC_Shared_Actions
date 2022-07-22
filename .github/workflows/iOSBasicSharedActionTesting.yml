@@ -18,5 +18,5 @@ jobs:
         echo "Env: \"${{ inputs.targetName }}\""
         echo "Env: ${{ inputs.workspaceName }}"
     - name: Test
-        run: xcodebuild test -workspace ${{inputs.workspaceName}} -scheme "${{ inputs.targetName }}" -sdk iphonesimulator -destination "platform=iOS Simulator,name=iPhone 11" ONLY_ACTIVE_ARCH=NO CODE_SIGNING_REQUIRED=NO
+      run: xcodebuild test -workspace ${{inputs.workspaceName}} -scheme "${{ inputs.targetName }}" -sdk iphonesimulator -destination "platform=iOS Simulator,name=iPhone 11" -enableCodeCoverage YES   ONLY_ACTIVE_ARCH=NO CODE_SIGNING_REQUIRED=NO 
       
